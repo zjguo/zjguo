@@ -1,6 +1,7 @@
 ## 普通
 
 占位符|说明|举例|输出
+---|---|---|---
 %v|相应值的默认格式|Printf("%+v", people)|{zhangsan}
 %+v|打印结构体时，会添加字段名|Printf("%+v", people)|{Name:zhangsan}
 %#v|相应值的Go语法表示|Printf("#v", people)|main.Human{Name:"zhangsan"}
