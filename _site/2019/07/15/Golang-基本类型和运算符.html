@@ -1,0 +1,126 @@
+
+<h2 id="布尔类型">布尔类型</h2>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span><span class="x"> </span><span class="n">b</span><span class="x"> </span><span class="kt">bool</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
+</span></code></pre></div></div>
+<h3 id="非运算符-">非运算符 !</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">!</span><span class="n">T</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">false</span><span class="x">
+</span><span class="o">!</span><span class="n">F</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">true</span><span class="x">
+</span></code></pre></div></div>
+<h3 id="和运算符-">和运算符 &amp;&amp;</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">T</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">true</span><span class="x">
+</span><span class="n">T</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">F</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">false</span><span class="x">
+</span><span class="n">F</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">false</span><span class="x">
+</span><span class="n">F</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">F</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">false</span><span class="x">
+</span></code></pre></div></div>
+<h3 id="或运算符-">或运算符 ||</h3>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">T</span><span class="x"> </span><span class="o">||</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">true</span><span class="x">
+</span><span class="n">T</span><span class="x"> </span><span class="o">||</span><span class="x"> </span><span class="n">F</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">true</span><span class="x">
+</span><span class="n">F</span><span class="x"> </span><span class="o">||</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">true</span><span class="x">
+</span><span class="n">F</span><span class="x"> </span><span class="o">||</span><span class="x"> </span><span class="n">F</span><span class="x"> </span><span class="o">-&gt;</span><span class="x"> </span><span class="no">false</span><span class="x">
+</span></code></pre></div></div>
+<h2 id="数字类型">数字类型</h2>
+<h3 id="整数">整数</h3>
+<ul>
+  <li>int8（-128 -&gt; 127）</li>
+  <li>int16（-32768 -&gt; 32767）</li>
+  <li>int32（-2,147,483,648 -&gt; 2,147,483,647）</li>
+  <li>int64（-9,223,372,036,854,775,808 -&gt; 9,223,372,036,854,775,807）
+    <h3 id="无符号整数">无符号整数</h3>
+  </li>
+  <li>uint8（0 -&gt; 255）</li>
+  <li>uint16（0 -&gt; 65,535）</li>
+  <li>uint32（0 -&gt; 4,294,967,295）</li>
+  <li>uint64（0 -&gt; 18,446,744,073,709,551,615）
+    <h3 id="浮点型ieee-754-标准">浮点型（IEEE-754 标准）</h3>
+  </li>
+  <li>float32（+- 1e-45 -&gt; +- 3.4 * 1e38）</li>
+  <li>float64（+- 5 * 1e-324 -&gt; 107 * 1e308）</li>
+</ul>
+
+<p>数字类型后的数字单位为 bit，指在内存中占用的容量大小，如 int8 相当于在内存中占用 1 个字节。</p>
+
+<p>int 型是计算最快的一种类型。</p>
+
+<p>类型间可以显式转换。</p>
+
+<p>示例：</p>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">n</span><span class="x"> </span><span class="kt">int16</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">34</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">m</span><span class="x"> </span><span class="kt">int32</span><span class="x">
+	</span><span class="c">// compiler error: cannot use n (type int16) as type int32 in assignment</span><span class="x">
+	</span><span class="c">//m = n</span><span class="x">
+	</span><span class="n">m</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">int32</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="x">
+
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"32 bit int is: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">m</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"16 bit int is: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">n</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+<h2 id="格式化说明符">格式化说明符</h2>
+<p>在格式化字符串里，%d 用于格式化整数（%x 和 %X 用于格式化 16 进制表示的数字），%g 用于格式化浮点型（%f 输出浮点数，%e 输出科学计数表示法），%0nd 用于规定输出长度为n的整数，其中开头的数字 0 是必须的。</p>
+
+<p><span>%n.mg</span> 用于表示数字 n 并精确到小数点后 m 位，除了使用 g 之外，还可以使用 e 或者 f，例如：使用格式化字符串 %5.2e 来输出 3.4 的结果为 3.40e+00。</p>
+<h2 id="位运算">位运算</h2>
+<p>位运算只能用于整数类型的变量，且需当它们拥有等长位模式时。</p>
+<h3 id="二元运算符">二元运算符</h3>
+<ul>
+  <li>按位与 &amp;</li>
+  <li>按位或 <span>|</span></li>
+  <li>按位异或 ^</li>
+</ul>
+
+<h2 id="一元运算符">一元运算符</h2>
+<ul>
+  <li>按位补足 ^</li>
+  <li>位左移 «</li>
+</ul>
+
+<p>用法：bitP « n。</p>
+
+<p>bitP 的位向左移动 n 位，右侧空白部分使用 0 填充；如果 n 等于 2，则结果是 2 的相应倍数，即 2 的 n 次方。例如：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="m">1</span><span class="x"> </span><span class="o">&lt;&lt;</span><span class="x"> </span><span class="m">10</span><span class="x"> </span><span class="c">// 等于 1 KB</span><span class="x">
+</span><span class="m">1</span><span class="x"> </span><span class="o">&lt;&lt;</span><span class="x"> </span><span class="m">20</span><span class="x"> </span><span class="c">// 等于 1 MB</span><span class="x">
+</span><span class="m">1</span><span class="x"> </span><span class="o">&lt;&lt;</span><span class="x"> </span><span class="m">30</span><span class="x"> </span><span class="c">// 等于 1 GB</span><span class="x">
+</span></code></pre></div></div>
+
+<ul>
+  <li>位右移 »</li>
+</ul>
+
+<h2 id="逻辑运算符">逻辑运算符</h2>
+
+<p>==、!=、&lt;、&lt;=、&gt;、&gt;=</p>
+
+<p>它们之所以被称为逻辑运算符是因为它们的运算结果总是为布尔值 bool。例如：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b3</span><span class="o">:=</span><span class="x"> </span><span class="m">10</span><span class="x"> </span><span class="o">&gt;</span><span class="x"> </span><span class="m">5</span><span class="x"> </span><span class="c">// b3 is true</span><span class="x">
+</span></code></pre></div></div>
+<h2 id="算术运算符">算术运算符</h2>
+
+<p>+、-、*、/、%</p>
+
+<h2 id="运算符与优先级">运算符与优先级</h2>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">优先级</span><span class="x"> 	</span><span class="n">运算符</span><span class="x">
+ </span><span class="m">7</span><span class="x"> 		</span><span class="o">^</span><span class="x"> </span><span class="o">!</span><span class="x">
+ </span><span class="m">6</span><span class="x"> 		</span><span class="o">*</span><span class="x"> </span><span class="o">/</span><span class="x"> </span><span class="o">%</span><span class="x"> </span><span class="o">&lt;&lt;</span><span class="x"> </span><span class="o">&gt;&gt;</span><span class="x"> </span><span class="o">&amp;</span><span class="x"> </span><span class="o">&amp;^</span><span class="x">
+ </span><span class="m">5</span><span class="x"> 		</span><span class="o">+</span><span class="x"> </span><span class="o">-</span><span class="x"> </span><span class="o">|</span><span class="x"> </span><span class="o">^</span><span class="x">
+ </span><span class="m">4</span><span class="x"> 		</span><span class="o">==</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="o">&lt;=</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="o">&gt;</span><span class="x">
+ </span><span class="m">3</span><span class="x"> 		</span><span class="o">&lt;-</span><span class="x">
+ </span><span class="m">2</span><span class="x"> 		</span><span class="o">&amp;&amp;</span><span class="x">
+ </span><span class="m">1</span><span class="x"> 		</span><span class="o">||</span><span class="x">
+</span></code></pre></div></div>
+<h2 id="类型别名">类型别名</h2>
+
+<p>当你在使用某个类型时，可以给它起个别名，用于简化名称或解决名称冲突。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">NT</span><span class="x"> </span><span class="kt">int</span><span class="x">
+
+</span><span class="k">var</span><span class="x"> </span><span class="n">a</span><span class="p">,</span><span class="x"> </span><span class="n">b</span><span class="x"> </span><span class="n">NT</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">3</span><span class="p">,</span><span class="x"> </span><span class="m">4</span><span class="x">
+</span></code></pre></div></div>
