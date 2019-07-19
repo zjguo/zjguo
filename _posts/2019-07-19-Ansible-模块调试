@@ -1,0 +1,96 @@
+# 调试模块
+## 调试（本地）
+要进入运行的模块localhost并使用调试器逐步执行：
+
+- 在模块中设置断点： import pdb; pdb.set_trace()
+- 在本地计算机上运行该模块： $ python -m pdb ./my_new_test_module.py ./args.json
+## 调试（远程）
+要调试在远程目标上运行的模块（即不是localhost）：
+
+1. 在您的控制器计算机（运行Ansible）上设置 ++**ANSIBLE_KEEP_REMOTE_FILES=1**++ 告诉Ansible保留它发送到远程计算机的模块，而不是在Playbook运行后删除它们。
+1. 运行针对远程计算机的playbook并指定-vvvv（详细）以显示Ansible正在用于模块的远程位置（以及许多其他内容）。
+1. 记下用于在远程主机上存储模块的ansible目录。此目录通位于常ansible_user的主目录下~/.ansible/tmp/ansible-tmp-...。
+1. 在playbook运行后SSH进入远程目标。
+1. 进入到您在步骤3中记下的目录。
+1. 从Ansible发送到远程主机的压缩文件中提取要调试的模块：Ansible会将模块扩展为./debug-dir。 您可以选择通过指定 ++**python AnsiballZ_my_test_module.py**++ 来运行压缩文件。
+```bash
+$ python AnsiballZ_my_test_module.py explode./debug-dirpython AnsiballZ_my_test_module.py
+```
+
+1. 导航到调试目录：
+```bash
+$ cd debug-dir
+```
+
+1. 修改或设置断点__main__.py。
+1. 确保解压缩的模块是可执行的：
+```bash
+$ chmod 755 __main__.py
+```
+
+1. 直接运行解压缩的模块，传递args包含最初传递的参数的文件：这种方法适用于再现行为以及修改调试参数。
+```bash
+$ ./__main__.py args
+```
+
+## 调试基于AnsibleModule的模块
+**提示**
+
+++*如果您正在使用hacking/test-module脚本，那么大部分内容都将由您负责。如果您需要对模块实际运行的远程计算机上的模块进行一些调试，或者在剧本中使用该模块，那么您可能需要使用此信息而不是依赖于测试模块。*++
+
+从Ansible 2.1开始，基于AnsibleModule的模块被整合为一个zip文件，由一个包装脚本内部的模块文件和各种python模块样板组成，而不是作为单个文件，所有代码连接在一起。如果没有一些帮助，这可能更难调试，因为需要从包装器中提取文件，以便查看模块中实际发生的情况。幸运的是，包装器脚本提供了一些辅助方法来实现这一点。
+
+如果你正在使用 **++ANSIBLE_KEEP_REMOTE_FILES++** 用于保存远程模块文件的环境变量，以下是调试会话启动方式的示例：
+
+
+```bash
+$ ANSIBLE_KEEP_REMOTE_FILES=1 ansible localhost -m ping -a 'data=debugging_session' -vvv
+<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: badger
+<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo $HOME/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595 `" && echo "` echo $HOME/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595 `" )'
+<127.0.0.1> PUT /var/tmp/tmpjdbJ1w TO /home/badger/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595/ping
+<127.0.0.1> EXEC /bin/sh -c 'LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 LC_MESSAGES=en_US.UTF-8 /usr/bin/python /home/badger/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595/ping'
+localhost | SUCCESS => {
+    "changed": false,
+    "invocation": {
+        "module_args": {
+            "data": "debugging_session"
+        },
+        "module_name": "ping"
+    },
+    "ping": "debugging_session"
+}
+```
+
+设置 **++ANSIBLE_KEEP_REMOTE_FILES=1++** 告诉Ansible保持而非将其删除的模块执行完毕后远端模块文件。赋予Ansible -vvv选项使ansible打印更多的调试信息。这样它就会输出临时模块文件的文件名供您查看。
+
+如果想检查封装的wrapper文件，它将显示一个带有大型base64编码字符串的小型python脚本。该字符串包含将要执行的模块。运行wrapper的explode命令将字符串转换为可以使用的一些python文件：
+
+
+```bash
+$ python /home/badger/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595/ping explode
+Module expanded into:
+/home/badger/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595/debug_dir
+当您查看debug_dir时，您将看到如下目录结构：
+
+├── ansible_module_ping.py
+├── args
+└── ansible
+    ├── __init__.py
+    └── module_utils
+        ├── basic.py
+        └── __init__.py
+```
+
+- ansible_module_ping.py是模块本身的代码。该名称基于具有前缀的模块的名称，以便我们不与任何其他python模块名称冲突。您可以修改此代码以查看它对模块的影响。
+- 该args文件包含JSON字符串。该字符串是一个字典，包含模块参数和Ansible传递给模块以更改其行为的其他变量。如果要修改传递给模块的参数，则可以使用此文件。
+- 该ansible目录包含ansible.module_utils模块使用的代码。Ansible包含ansible.module_utils模块中任何导入的文件，但不包含任何其他模块中的任何文件。因此，如果您的模块使用 ansible.module_utils.urlAnsible将包含它，但如果您的模块包含请求，那么您必须确保在运行模块之前在系统上安装了python 请求库。如果您怀疑模块在某些样板代码中而不是在您编写的模块代码中出现问题，则可以修改此目录中的文件。
+
+
+一旦编辑了分解树中的代码或参数，就需要某种方法来运行它。它有一个单独的包装子命令：
+
+```bash
+$ python /home/badger/.ansible/tmp/ansible-tmp-1461434734.35-235318071810595/ping execute
+{"invocation": {"module_args": {"data": "debugging_session"}}, "changed": false, "ping": "debugging_session"}
+```
+
+此子命令负责设置 **++PYTHONPATH++** 以使用展开的 ++**debug_dir/ansible/module_utils**++ 目录并使用args文件中的参数调用脚本。您可以继续这样运行，直到您了解问题为止。然后，您可以将其复制回真实的模块文件，并通过ansible或ansible-playbook测试真实模块的工作原理。
